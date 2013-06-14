@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Processing.js Asteroids</title>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="./../processing-1.4.1.js"></script>
+
+    <!--
+        This is a source-file-less sketch, loaded from inline source code in
+        the html header. This only works if the script specifies a data-processing-target
+    -->
+    <script type="text/javascript" src="asteroid.js"></script>
+    <script type="text/javascript" src="asteroidManager.js"></script>
+    <script type="text/javascript" src="frameTimer.js"></script>
+    <script type="text/javascript" src="projectile.js"></script>
+    <script type="text/javascript" src="spaceship.js"></script>
+    <script type="text/javascript" src="main.js"></script>
+	<script type="text/processing" data-processing-target="targetcanvas">
+		
+
+		var canvas = document.getElementById("targetcanvas");
+		// attaching the sketchProc function to the canvas
+		var processingInstance = new Processing(canvas, sketchProc);
+    </script>
+  </head>
+  <body>
+    <canvas id="targetcanvas" style="border: 1px solid black;">
+        <h2>Too bad your browser is a piece crap and doesn't support the HTML5 canvas object...
+    <br/> <a href='www.google.com/chrome'>This may help</a></h2>
+    </canvas>
+  </body>
+</html>
