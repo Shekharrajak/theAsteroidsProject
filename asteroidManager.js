@@ -10,9 +10,9 @@ function AsteroidsManager(){
 	this.removeAsteroid = function(index){
 		this.asteroids.splice(index, 1);
 	};
-	this.moveAsteroids = function(){
+	this.moveAsteroids = function(tickTime, gameSpeed){
 		for(var i=0; i<this.asteroids.length; i+=1){
-			this.asteroids[i].move();
+			this.asteroids[i].move(tickTime, gameSpeed);
 			this.asteroids[i].bound(500);
 		}
 	};

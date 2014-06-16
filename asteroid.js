@@ -1,4 +1,6 @@
 function Asteroid(pos, vel, level) {
+	processing = Processing.getInstanceById('targetcanvas');
+
 	//seting level default value ot 3
 	level = typeof level !== 'undefined' ? level : 3;
 	// level defines how the asteroids breaks when shot
@@ -13,7 +15,6 @@ function Asteroid(pos, vel, level) {
 	//just in case this type of functionality of projectiles not moving is usefull
 	this.moving = true;
 	
-	processing = Processing.getInstanceById('targetcanvas');
 	this.position = new processing.PVector(pos[0], pos[1]);
 	this.velocity = new processing.PVector(vel[0], vel[1]);
 	
@@ -38,11 +39,11 @@ function Asteroid(pos, vel, level) {
 			this.setPos(this.position.x, 0);
 		}
 	};
-	this.move = function() {
+	this.move = function(tickTime, gameSpeed) {
 		if(this.moving === true){
 			var tempSpeed = new processing.PVector(0,0);
 			tempSpeed.set(this.velocity);
-			tempSpeed.mult(window.timer.getTickTime()/window.gameSpeed);
+			tempSpeed.mult(tickTime/gameSpeed);
 			this.position.add(tempSpeed);
 		}
 	};

@@ -48,11 +48,11 @@ function Projectile(pos, vel, heading) {
 			this.setPos(this.position.x, 0);
 		}
 	};
-	this.move = function() {
+	this.move = function(tickTime, gameSpeed) {
 		if(this.moving === true){
 			var tempSpeed = new processing.PVector(0,0);
 			tempSpeed.set(this.velocity);
-			tempSpeed.mult(window.timer.getTickTime()/window.gameSpeed);
+			tempSpeed.mult(tickTime/gameSpeed);
 			this.position.add(tempSpeed);
 		}
 	};

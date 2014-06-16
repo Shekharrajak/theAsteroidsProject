@@ -1,7 +1,9 @@
 function Spaceship(processing) {
+	processing = Processing.getInstanceById('targetcanvas');
+
 	this.topspeed = 3;
 	this.heading = 0;
-	this.size = 16;
+	this.size = 50;
 	this.dampening = 0.995;
 	this.accelRate = 0.04;
 
@@ -38,27 +40,27 @@ function Spaceship(processing) {
 			this.setPos(this.position.x, 0);
 		}
 	};
-	this.move = function() {
+	this.move = function(tickTime, gameSpeed) {
 		if(this.thrusting === true){
-			this.thrust();
+			this.thrust(tickTime, gameSpeed);
 		}
 		if(this.turningRight === true){
-			this.turn(0.05);
+			this.turn(0.05, tickTime, gameSpeed);
 		}
 		if(this.turningLeft === true){
-			this.turn(-0.05);
+			this.turn(-0.05, tickTime, gameSpeed);
 		}
 		
 		var tempAccel = new processing.PVector(0,0);
 		tempAccel.set(this.acceleration);
-		tempAccel.mult(window.timer.getTickTime()/window.gameSpeed);
+		tempAccel.mult(tickTime/gameSpeed);
 		this.velocity.add(tempAccel);
 		//this.velocity.mult(this.dampening);
 		this.velocity.limit(this.topspeed);
 		
 		var tempSpeed = new processing.PVector(0,0);
 		tempSpeed.set(this.velocity);
-		tempSpeed.mult(window.timer.getTickTime()/window.gameSpeed);
+		tempSpeed.mult(tickTime/gameSpeed);
 		this.position.add(tempSpeed);
 		
 		this.acceleration.mult(0);
@@ -73,8 +75,8 @@ function Spaceship(processing) {
 		this.velocity.mult(0);
 	};
 	
-	this.turn = function (a) {
-		this.heading += a*window.timer.getTickTime()/window.gameSpeed;
+	this.turn = function (a, tickTime, gameSpeed) {
+		this.heading += a*tickTime/gameSpeed;
 	};
 	
 	this.thrust = function() {
@@ -97,25 +99,28 @@ function Spaceship(processing) {
 		processing.stroke(0);
 		processing.strokeWeight(2);
 		processing.pushMatrix();
-		processing.translate(this.position.x, this.position.y+this.size);
+		processing.translate(this.position.x, this.position.y);
 		processing.rotate(this.heading);
 		processing.fill(175);
 		if (this.thrusting) processing.fill(0, 255, 0);
 		if (this.backwards) processing.fill(255, 0, 0);
-	
+
+		//TODO: Better center estimate.
+		//Height to side ratio 0.866025
 		processing.beginShape();
-		processing.vertex(-this.size, this.size);
-		processing.vertex(0, -this.size);
-		processing.vertex(this.size, this.size);
+		processing.vertex(-this.size/2, this.size*0.433);
+		processing.vertex(0, -this.size*0.433);
+		processing.vertex(this.size/2, this.size*0.433);
 		processing.endShape(processing.CLOSE);
 		processing.rectMode(processing.CENTER);
 		processing.popMatrix();
 	};
 	
-
-	this.displayShots = function(){
+	//TODO: Displaying shots shouldn't automatically move them.
+	//Dang buh, I wrote some lazy code up North Rock...
+	this.displayShots = function(tickTime, gameSpeed){
 		for(var i=0;i<this.shots.length;i+=1){
-			this.shots[i].move();
+			this.shots[i].move(tickTime, gameSpeed);
 			this.shots[i].bound(500);
 			this.shots[i].display();
 		}
@@ -123,8 +128,9 @@ function Spaceship(processing) {
 	};
 	//the default add shot will use the current ship pos and vel
 	this.addShot = function(){
-	this.shots.push(
-		new Projectile(this.position, this.velocity, this.heading));
+		this.shots.push(
+			new Projectile(this.position, this.velocity, this.heading)
+		);
 	};
 	this.removeShot = function(index){
 		this.shots.splice(index, 1);
