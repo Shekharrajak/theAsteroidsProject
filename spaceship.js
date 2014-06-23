@@ -18,7 +18,11 @@ function Spaceship(processing) {
 	this.acceleration = new processing.PVector();
 	
 	this.shots = [];
-	
+
+	//List of vertices to draw the spaceship with.
+	//Thisi means that the spaceship can now have a 
+	//dynamic shape.
+	this.vertices = [];
 	
 	this.setPos = function(newXPos, newYPos){
 		this.position.x = newXPos;
@@ -86,7 +90,7 @@ function Spaceship(processing) {
 		this.applyForce(force);
 		this.thrusting = true;
 	};
-		
+	
 	this.back = function() {
 		angle = this.heading - processing.PI/2;
 		force = new processing.PVector(Math.cos(angle), Math.sin(angle));
@@ -98,22 +102,39 @@ function Spaceship(processing) {
 	this.display = function() {
 		processing.stroke(0);
 		processing.strokeWeight(2);
-		processing.pushMatrix();
-		processing.translate(this.position.x, this.position.y);
-		processing.rotate(this.heading);
 		processing.fill(175);
 		if (this.thrusting) processing.fill(0, 255, 0);
 		if (this.backwards) processing.fill(255, 0, 0);
-
+		//TODO: Use vectors and vector roation to draw traingle.
+			//triangle(posx+vec.x, posy+vec.y,posx-vec2.x,
+			//posy-vec2.y, posx+vec2.x, posy+vec2.y);
 		//TODO: Better center estimate.
 		//Height to side ratio 0.866025
-		processing.beginShape();
-		processing.vertex(-this.size/2, this.size*0.433);
-		processing.vertex(0, -this.size*0.433);
-		processing.vertex(this.size/2, this.size*0.433);
-		processing.endShape(processing.CLOSE);
-		processing.rectMode(processing.CENTER);
-		processing.popMatrix();
+		
+		var top = new processing.PVector();
+		var bl = new processing.PVector();
+		var br = new processing.PVector();
+		var topD = new processing.PVector(0, -this.size*0.433);
+		var blD = new processing.PVector(
+			-this.size/2, this.size*0.433
+		);
+		var brD = new processing.PVector(
+			this.size/2, this.size*0.433
+		);
+		top = this.position.get();
+		bl = this.position.get();
+		br = this.position.get();
+		top.add(0, 0);
+		//bl.add(-this.size/2, this.size*0.433);
+
+		topD = rotateVector(topD, this.heading);
+		blD = rotateVector(blD, this.heading);
+		brD = rotateVector(brD, this.heading);
+		top.add(topD);
+		bl.add(blD);
+		br.add(brD);
+		//bl.add(dir)
+		processing.triangle(top.x, top.y, bl.x, bl.y, br.x, br.y);
 	};
 	
 	//TODO: Displaying shots shouldn't automatically move them.

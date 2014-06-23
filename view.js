@@ -39,16 +39,19 @@ function View(processing){
 		this.ship.displayShots(tickTime, this.gameSpeed);
 		
 		//Maybe move colliosionn detectoin loop into some sort of class?
+		//Check bullet to asteroid collisions.
 		for(var i=0; i<this.ship.shots.length; i+=1){
+			//TODO: Reevaluate how this collision  is done. Looks kinda lazy.
 			asteroidHit = this.asteroidsManager.detectCircularCollision(
-				this.ship.shots[i].position, this.ship.shots[i].size
+				this.ship.shots[i].position,
+				this.ship.shots[i].size
 			);
 			if(asteroidHit!==-1){
 				this.asteroidsManager.breakAsteroid(asteroidHit, 3);
 				this.ship.removeShot(i);
 			}
-			
 		}
+		//Check asteroid to spaceship collisions.
 		
 		
 		//update time since last frame.
@@ -87,6 +90,16 @@ function View(processing){
 		}
 		else if (this.processing.keyCode === this.processing.LEFT) {
 			this.ship.turningLeft = false;
+		}
+	};
+
+	//Manage collision between ship and asteroids.
+	this.asteroidsShipCollision = function(){
+		function asteroidShipCollisions(){
+			for(var i=0; i<this.asteroidManager.asteroids.length; i+=1){
+				//TODO: The spaceship should store info on it's vertexes.
+				//lineCircleCollision(this.ship.vertex[0].x, ...
+			}
 		}
 	};
 }
