@@ -1,30 +1,33 @@
-function Asteroid(pos, vel, level) {
+/** Asteroid class.
+ *
+ *
+ */
+function Asteroid(pos, vel, level){
+	// TODO: Don't hardcode this!
 	processing = Processing.getInstanceById('targetcanvas');
 
-	//seting level default value ot 3
+	// Seting level default value ot 3
 	level = typeof level !== 'undefined' ? level : 3;
-	// level defines how the asteroids breaks when shot
+	// Level defines how the asteroids breaks when shot.
+	// Asteroid go down a level when shot. And die at level 0.
 	this.level = level;
 	this.minSize = 10;
 	this.size = this.minSize*this.level;
 	this.tailLength = 5;
 	
-	this.lifetime = 100;
-	this.currentLifetime = 0;
-	
-	//just in case this type of functionality of projectiles not moving is usefull
-	this.moving = true;
-	
+	// Just in case this type of functionality of projectiles not moving is useful.
+	this.moving = true
+
 	this.position = new processing.PVector(pos[0], pos[1]);
 	this.velocity = new processing.PVector(vel[0], vel[1]);
 	
-	
+	// Set the position of the asteroid.
 	this.setPos = function(newXPos, newYPos){
 		this.position.x = newXPos;
 		this.position.y = newYPos;
 	};
 	
-	//keep the projectile within the screen size given
+	// Keep the projectile within the screen size given.
 	this.bound = function(screenSize){
 		if(this.position.x+this.size/2 <0){
 			this.setPos(screenSize,this.position.y);
@@ -39,6 +42,8 @@ function Asteroid(pos, vel, level) {
 			this.setPos(this.position.x, 0);
 		}
 	};
+
+	// Move asteroid accordingly.
 	this.move = function(tickTime, gameSpeed) {
 		if(this.moving === true){
 			var tempSpeed = new processing.PVector(0,0);
@@ -48,6 +53,7 @@ function Asteroid(pos, vel, level) {
 		}
 	};
 	
+	// Display the asteroid.
 	this.display = function() {
 		processing.stroke(25,200,25);
 		processing.strokeWeight(1);

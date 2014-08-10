@@ -1,7 +1,12 @@
-function Spaceship(processing) {
+/** Spaceship class.
+ *
+ * Also, encapsulates a spaceship's shots in this class.
+ */
+function Spaceship(processing){
+	// TODO: Maybe not hardcode all of these inititial settings.
 	processing = Processing.getInstanceById('targetcanvas');
 
-	this.topspeed = 3;
+
 	this.heading = 0;
 	this.size = 50;
 	this.dampening = 0.995;
@@ -19,9 +24,8 @@ function Spaceship(processing) {
 	
 	this.shots = [];
 
-	//List of vertices to draw the spaceship with.
-	//Thisi means that the spaceship can now have a 
-	//dynamic shape.
+	// List of vertices to draw the spaceship with.
+	// This means that the spaceship can now have a dynamic shape.
 	this.vertices = [];
 	
 	this.setPos = function(newXPos, newYPos){
@@ -29,7 +33,7 @@ function Spaceship(processing) {
 		this.position.y = newYPos;
 	};
 	
-	//keep the spaceship within the screen size given
+	// Keep the spaceship within the screen size given.
 	this.bound = function(screenSize){
 		if(this.position.x+this.size/2 <0){
 			this.setPos(screenSize,this.position.y);
@@ -44,7 +48,9 @@ function Spaceship(processing) {
 			this.setPos(this.position.x, 0);
 		}
 	};
-	this.move = function(tickTime, gameSpeed) {
+
+	// Move ship according to tickTime.
+	this.move = function(tickTime, gameSpeed){
 		if(this.thrusting === true){
 			this.thrust(tickTime, gameSpeed);
 		}
@@ -70,20 +76,32 @@ function Spaceship(processing) {
 		this.acceleration.mult(0);
 	};
 	
-	this.applyForce = function(force) {
+	/** A pretty generic function that can move the ship in any direction.
+	 *
+	 * Will come in hand if we ever get to the point of which the ship's
+	 * momentum by anything other than it's thrust.
+	 */
+	this.applyForce = function(force){
 		f = force.get();
 		this.acceleration.add(f);
 	};
 
-	this.stopForce = function() {
+	/** Currently unused. But completely stops the ship.
+	 *
+	 * Will be usefull if we ever get a 'brake' feature.
+	 */
+	this.stopForce = function(){
 		this.velocity.mult(0);
 	};
 	
-	this.turn = function (a, tickTime, gameSpeed) {
-		this.heading += a*tickTime/gameSpeed;
+	// TODO: Maybe turn angle into a ratio? Something like RPMs?
+	// Turn ship a specified angle.
+	this.turn = function (angle, tickTime, gameSpeed){
+		this.heading += angle*tickTime/gameSpeed;
 	};
 	
-	this.thrust = function() {
+	// Thrust ship forwards.
+	this.thrust = function(){
 		angle = this.heading - processing.PI/2;
 		force = new processing.PVector(Math.cos(angle), Math.sin(angle));
 		force.mult(this.accelRate);
@@ -91,7 +109,8 @@ function Spaceship(processing) {
 		this.thrusting = true;
 	};
 	
-	this.back = function() {
+	// Unused, but thrust ship backwards.
+	this.back = function(){
 		angle = this.heading - processing.PI/2;
 		force = new processing.PVector(Math.cos(angle), Math.sin(angle));
 		force.mult(-0.1);
@@ -99,21 +118,26 @@ function Spaceship(processing) {
 		this.backwards = true;
 	};
 		
-	this.display = function() {
+	/** Displays the ship.
+	 *
+	 * Displays based on the ship's vertexs and rotation.
+	 * So could potentially have a dynamic ship shape.
+	 */
+	this.display = function(){
 		processing.stroke(0);
 		processing.strokeWeight(2);
 		processing.fill(175);
 		if (this.thrusting) processing.fill(0, 255, 0);
 		if (this.backwards) processing.fill(255, 0, 0);
-		//TODO: Use vectors and vector roation to draw traingle.
-			//triangle(posx+vec.x, posy+vec.y,posx-vec2.x,
-			//posy-vec2.y, posx+vec2.x, posy+vec2.y);
-		//TODO: Better center estimate.
-		//Height to side ratio 0.866025
-		
+
+		// TODO: Better center estimate.
+		// TODO: Better documention of this process!
+		// Height to side ratio 0.866025
 		var top = new processing.PVector();
 		var bl = new processing.PVector();
 		var br = new processing.PVector();
+
+		// Create temporary vectors to rotate with.
 		var topD = new processing.PVector(0, -this.size*0.433);
 		var blD = new processing.PVector(
 			-this.size/2, this.size*0.433
@@ -121,15 +145,18 @@ function Spaceship(processing) {
 		var brD = new processing.PVector(
 			this.size/2, this.size*0.433
 		);
+		// All vertices start at the ships center position.
 		top = this.position.get();
 		bl = this.position.get();
 		br = this.position.get();
 		top.add(0, 0);
 		//bl.add(-this.size/2, this.size*0.433);
 
+		// Now rotate the temp vectors according to the ship's heading.
 		topD = rotateVector(topD, this.heading);
 		blD = rotateVector(blD, this.heading);
 		brD = rotateVector(brD, this.heading);
+		// Move each vertex away from the center accordingly.
 		top.add(topD);
 		bl.add(blD);
 		br.add(brD);
@@ -137,8 +164,8 @@ function Spaceship(processing) {
 		processing.triangle(top.x, top.y, bl.x, bl.y, br.x, br.y);
 	};
 	
-	//TODO: Displaying shots shouldn't automatically move them.
-	//Dang buh, I wrote some lazy code up North Rock...
+	// TODO: Displaying shots shouldn't automatically move them.
+	// Dang buh, I wrote some lazy code up North Rock...
 	this.displayShots = function(tickTime, gameSpeed){
 		for(var i=0;i<this.shots.length;i+=1){
 			this.shots[i].move(tickTime, gameSpeed);
@@ -147,15 +174,18 @@ function Spaceship(processing) {
 		}
 		this.deleteTimeouts();
 	};
-	//the default add shot will use the current ship pos and vel
+	// The default add shot will use the current ship pos and vel.
 	this.addShot = function(){
 		this.shots.push(
 			new Projectile(this.position, this.velocity, this.heading)
 		);
 	};
+	
 	this.removeShot = function(index){
 		this.shots.splice(index, 1);
 	};
+	
+	// Removes shots base on how long they have been alive.
 	this.deleteTimeouts = function(){
 		for(var i=0;i<this.shots.length;i+=1){
 			if(this.shots[i].creationTime+this.shots[i].lifetime<(

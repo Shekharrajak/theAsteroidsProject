@@ -1,29 +1,30 @@
-//TODO: Get tail length to convert to units first
-//so that the length is measure in pixels not speed
+/** Projectile (a.k.a. shot)
+ *
+ * This should try to stay as a pretty generic object.
+ */
 function Projectile(pos, vel, heading) {
 	processing = Processing.getInstanceById('targetcanvas');
 
 	this.size = 16;
 	this.speed = 2;
 
-	this.lifetime = 7000; // in milliseconds
+	// How long the projectile should live. In milliseconds.
+	this.lifetime = 7000;
 	this.creationTime = (new Date()).getTime();
 
-	//Just in case this type of functionality is usefull.
-	this.moving = true;
-
+	// Just in case this type of functionality of projectiles not moving is useful.
+	this.moving = true
 
 	this.position = new processing.PVector(pos.x, pos.y);
-
 
 	angle = heading - processing.PI/2;
 	force = new processing.PVector(Math.cos(angle), Math.sin(angle));
 	force.mult(this.speed);
 
 	var tempVel = new processing.PVector(vel.x, vel.y);
-	//bullet velocity shots from spaceship heading
+	// Bullet velocity shots from spaceship heading.
 	tempVel.add(force);
-	//spaceships velocity
+	// Spaceships velocity
 	tempVel.add(vel);
 	this.velocity = new processing.PVector(tempVel.x, tempVel.y);
 
@@ -33,7 +34,8 @@ function Projectile(pos, vel, heading) {
 		this.position.y = newYPos;
 	};
 
-	//keep the projectile within the screen size given
+	// TODO: Centralize all of this generic bound functions.
+	// Keep the projectile within the screen size given
 	this.bound = function(screenSize){
 		if(this.position.x+this.size/2 <0){
 			this.setPos(screenSize,this.position.y);
@@ -48,7 +50,8 @@ function Projectile(pos, vel, heading) {
 			this.setPos(this.position.x, 0);
 		}
 	};
-	this.move = function(tickTime, gameSpeed) {
+
+	this.move = function(tickTime, gameSpeed){
 		if(this.moving === true){
 			var tempSpeed = new processing.PVector(0,0);
 			tempSpeed.set(this.velocity);
@@ -57,7 +60,7 @@ function Projectile(pos, vel, heading) {
 		}
 	};
 
-	this.display = function() {
+	this.display = function(){
 		processing.stroke(255,255,255);
 		processing.strokeWeight(1);
 		processing.fill(0,0,255);

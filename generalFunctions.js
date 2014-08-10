@@ -28,14 +28,19 @@ function lineCircleCollision(x0, y0, x1, y1, cx, cy, r){
 	return false;
 };
 
+/** Rotates the heading of a 2D vector by a specified angle.
+ *
+ * Took a long time to get this code working dynamically.
+ * Main issue was in reseting the magnitude.
+ */
 function rotateVector(vec, angle) {
-	var tempVec = vec.get();
-	var magnitude = tempVec.mag();
-	var adjustedAngle = tempVec.heading2D()+angle;
+	var newVec = vec.get();
+	var magnitude = newVec.mag();
+	var adjustedAngle = newVec.heading2D()+angle;
 	
-	//Reset magnitude
-	tempVec.x = magnitude * Math.cos(adjustedAngle);
-	tempVec.y = magnitude * Math.sin(adjustedAngle);
+	// Resetting the magnitude is key.
+	newVec.x = magnitude * Math.cos(adjustedAngle);
+	newVec.y = magnitude * Math.sin(adjustedAngle);
 	
-	return tempVec;
+	return newVec;
 };
