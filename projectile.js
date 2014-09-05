@@ -5,7 +5,7 @@
 function Projectile(pos, vel, heading) {
 	processing = Processing.getInstanceById('targetcanvas');
 
-	this.size = 16;
+	this.size = 3;
 	this.speed = 2;
 
 	// How long the projectile should live. In milliseconds.
@@ -64,6 +64,6 @@ function Projectile(pos, vel, heading) {
 		processing.stroke(255,255,255);
 		processing.strokeWeight(1);
 		processing.fill(0,0,255);
-		processing.ellipse(this.position.x, this.position.y, 3, 3);
+		processing.ellipse(this.position.x, this.position.y, this.size, this.size);
 	};
 }

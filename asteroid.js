@@ -8,11 +8,11 @@ function Asteroid(pos, vel, level){
 
 	// Seting level default value ot 3
 	level = typeof level !== 'undefined' ? level : 3;
-	// Level defines how the asteroids breaks when shot.
+	// Level defines how many times the asteroids breaks when shot.
 	// Asteroid go down a level when shot. And die at level 0.
 	this.level = level;
-	this.minSize = 10;
-	this.size = this.minSize*this.level;
+	this.incrementSize = 20;
+	this.size = this.incrementSize*this.level;
 	this.tailLength = 5;
 	
 	// Just in case this type of functionality of projectiles not moving is useful.
@@ -61,9 +61,8 @@ function Asteroid(pos, vel, level){
 		processing.ellipse(
 			this.position.x,
 			this.position.y,
-			this.size*this.level,
-			this.size*this.level
+			this.size,
+			this.size
 		);
-		processing.rect(10,10,10,10);
 	};
 }

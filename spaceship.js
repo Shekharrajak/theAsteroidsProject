@@ -26,7 +26,12 @@ function Spaceship(processing){
 
 	// List of vertices to draw the spaceship with.
 	// This means that the spaceship can now have a dynamic shape.
-	this.vertices = [];
+	// Height to side ratio 0.866025
+	this.vertices = [
+		new processing.PVector(0, -this.size*0.433),
+		new processing.PVector(-this.size/3, this.size*0.433),
+		new processing.PVector(this.size/3, this.size*0.433)
+	];
 	
 	this.setPos = function(newXPos, newYPos){
 		this.position.x = newXPos;
@@ -118,6 +123,43 @@ function Spaceship(processing){
 		this.backwards = true;
 	};
 		
+	/** Returns array of the current absolute postion of ship vertices.
+	 *
+	 * Opposed to this.vertices which simple show the relative
+	 * position relative to the ship origin position.
+	 * TODO: Get this to be a dynamic funtion instead of
+	 * only using just three vertices.
+	 */
+	this.getCurrentVertices = function(){
+		// TODO: Better documention of this process!
+		var top = new processing.PVector();
+		var bl = new processing.PVector();
+		var br = new processing.PVector();
+
+		// Create temporary vectors to rotate with.
+		var topD = this.vertices[0];
+		var blD = this.vertices[1];
+		var brD = this.vertices[2];
+
+		// All vertices start at the ships center position.
+		top = this.position.get();
+		bl = this.position.get();
+		br = this.position.get();
+		top.add(0, 0);
+		//bl.add(-this.size/2, this.size*0.433);
+
+		// Now rotate the temp vectors according to the ship's heading.
+		// This is only rotating relative to point 0, 0.
+		// If you try to rotate around any other point everything gets skewed.
+		topD = rotateVector(topD, this.heading);
+		blD = rotateVector(blD, this.heading);
+		brD = rotateVector(brD, this.heading);
+		// Move each vertex away from the center accordingly.
+		top.add(topD);
+		bl.add(blD);
+		br.add(brD);
+		return [top, bl, br]
+	};
 	/** Displays the ship.
 	 *
 	 * Displays based on the ship's vertexs and rotation.
@@ -130,38 +172,15 @@ function Spaceship(processing){
 		if (this.thrusting) processing.fill(0, 255, 0);
 		if (this.backwards) processing.fill(255, 0, 0);
 
-		// TODO: Better center estimate.
-		// TODO: Better documention of this process!
-		// Height to side ratio 0.866025
-		var top = new processing.PVector();
-		var bl = new processing.PVector();
-		var br = new processing.PVector();
-
-		// Create temporary vectors to rotate with.
-		var topD = new processing.PVector(0, -this.size*0.433);
-		var blD = new processing.PVector(
-			-this.size/2, this.size*0.433
+		currentVertices = this.getCurrentVertices();
+		processing.triangle(
+			currentVertices[0].x,
+			currentVertices[0].y,
+			currentVertices[1].x,
+			currentVertices[1].y,
+			currentVertices[2].x,
+			currentVertices[2].y
 		);
-		var brD = new processing.PVector(
-			this.size/2, this.size*0.433
-		);
-		// All vertices start at the ships center position.
-		top = this.position.get();
-		bl = this.position.get();
-		br = this.position.get();
-		top.add(0, 0);
-		//bl.add(-this.size/2, this.size*0.433);
-
-		// Now rotate the temp vectors according to the ship's heading.
-		topD = rotateVector(topD, this.heading);
-		blD = rotateVector(blD, this.heading);
-		brD = rotateVector(brD, this.heading);
-		// Move each vertex away from the center accordingly.
-		top.add(topD);
-		bl.add(blD);
-		br.add(brD);
-		//bl.add(dir)
-		processing.triangle(top.x, top.y, bl.x, bl.y, br.x, br.y);
 	};
 	
 	// TODO: Displaying shots shouldn't automatically move them.

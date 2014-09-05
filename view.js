@@ -17,7 +17,7 @@ function View(processing){
 		// Add a new testing asteroid.
 		this.asteroidsManager.addAsteroid([100,100], [1,2], 3);
 		
-		this.gameSpeed = 15;
+		this.gameSpeed = 40;
 		
 		this.timer.tick();
 	};
@@ -39,10 +39,7 @@ function View(processing){
 		this.processing.background(0,0,0);
 
 		// Move than display all asteroids
-		this.asteroidsManager.moveAsteroids(
-			tickTime,
-			this.gameSpeed
-		);
+		this.asteroidsManager.moveAsteroids(tickTime, this.gameSpeed);
 		this.asteroidsManager.displayAsteroids();
 		
 		// Display the ship.
@@ -70,13 +67,13 @@ function View(processing){
 		}
 
 		// Check asteroid to spaceship collisions.
-		
+		this.asteroidsShipCollision();
 		
 		// Update time since last frame.
 		// TODO: Try to remember/figure out why this is done last.
 		// Or does is even matter when is runs as long it's consistent?
 		// I kinda feel like its missing the whole loop's time.
-		// Like I should place it right at the top under the 
+		// Like I should place it right at the top under the
 		// getTickTime() call
 		this.timer.tick();
 	};
@@ -120,10 +117,30 @@ function View(processing){
 
 	//Manage collision between ship and asteroids.
 	this.asteroidsShipCollision = function(){
-		function asteroidShipCollisions(){
-			for(var i=0; i<this.asteroidManager.asteroids.length; i+=1){
-				//TODO: The spaceship should store info on it's vertexes.
-				//lineCircleCollision(this.ship.vertex[0].x, ...
+		for(var i=0; i<this.asteroidsManager.asteroids.length; i+=1){
+		currentVertices = this.ship.getCurrentVertices();
+			for(var j=0; j<currentVertices.length; j+=1){
+				// Wrap around the vertices.
+				if (j+1 >= currentVertices.length){
+					next = 0;
+				}
+				else{
+					next = j+1;
+				}
+				hit = lineCircleCollision(
+					// Points of the ships sides.
+					currentVertices[j].x,
+					currentVertices[j].y,
+					currentVertices[next].x,
+					currentVertices[next].y,
+					// Asteroid position and size*2(radius).
+					this.asteroidsManager.asteroids[i].position.x,
+					this.asteroidsManager.asteroids[i].position.y,
+					this.asteroidsManager.asteroids[i].size/2// * 2
+				)
+				if (hit){
+					console.log("Spaceship hit!");
+				}
 			}
 		}
 	};

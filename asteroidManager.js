@@ -62,7 +62,7 @@
 	this.detectCircularCollision = function(pos, size){
 		for(var i=0; i<this.asteroids.length; i+=1){
 			distance = this.asteroids[i].position.dist(pos);
-			if(distance<this.asteroids[i].size+size){
+			if(distance<=this.asteroids[i].size/2+size/2){
 				// only return one asteroid.
 				return i;
 			}
