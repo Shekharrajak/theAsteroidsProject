@@ -16,15 +16,67 @@ function View(processing){
 		this.asteroidsManager = new AsteroidsManager();
 		// Add a new testing asteroid.
 		this.asteroidsManager.addAsteroid([100,100], [1,2], 3);
+		this.contextManager = new contextManager(this);
 		
-		this.gameSpeed = 40;
+		this.gameSpeed = 15;
 		
 		this.timer.tick();
 	};
 
+
 	this.newGame = function(){
 
 	};
+
+	/** Run when the ship dies.
+	 *
+	 * Got hit by asteroid, runs out of fuel, etc.
+	 */
+	this.shipDeath = function(){
+		// Decrement live once we get them...
+
+		// Reset the ship.
+		this.ship.resetShip();
+	};
+
+	//Manage collision between ship and asteroids.
+	this.asteroidsShipCollision = function(){
+		for(var i=0; i<this.asteroidsManager.asteroids.length; i+=1){
+		currentVertices = this.ship.getCurrentVertices();
+			for(var j=0; j<currentVertices.length; j+=1){
+				// Wrap around the vertices.
+				if (j+1 >= currentVertices.length){
+					next = 0;
+				}
+				else{
+					next = j+1;
+				}
+				hit = lineCircleCollision(
+					// Points of the ships sides.
+					currentVertices[j].x,
+					currentVertices[j].y,
+					currentVertices[next].x,
+					currentVertices[next].y,
+					// Asteroid position and size*2(radius).
+					this.asteroidsManager.asteroids[i].position.x,
+					this.asteroidsManager.asteroids[i].position.y,
+					this.asteroidsManager.asteroids[i].size/2// * 2
+				)
+				if (hit){
+					this.shipDeath();
+					this.contextManager.setContext(
+						this.preMainLoop,
+						this.preMainKeyPresses,
+						null
+					);
+				}
+			}
+		}
+	};
+
+
+
+
 
 	/** Main game loop.
 	 *
@@ -80,7 +132,7 @@ function View(processing){
 
 	// TODO: Hmmm, maybe I could streamline this code into function.
 	// So that I could quickly change keymapping between context screens.
-	this.keyPressed = function(){
+	this.mainKeyPresses = function(){
 		if (this.processing.keyCode === this.processing.UP) {
 			this.ship.thrusting = true;
 		}
@@ -100,7 +152,7 @@ function View(processing){
 		}
 	};
 
-	this.keyReleased = function(){
+	this.mainKeyReleases = function(){
 		if (this.processing.keyCode === this.processing.UP) {
 			this.ship.thrusting = false;
 		}
@@ -115,33 +167,40 @@ function View(processing){
 		}
 	};
 
-	//Manage collision between ship and asteroids.
-	this.asteroidsShipCollision = function(){
-		for(var i=0; i<this.asteroidsManager.asteroids.length; i+=1){
-		currentVertices = this.ship.getCurrentVertices();
-			for(var j=0; j<currentVertices.length; j+=1){
-				// Wrap around the vertices.
-				if (j+1 >= currentVertices.length){
-					next = 0;
-				}
-				else{
-					next = j+1;
-				}
-				hit = lineCircleCollision(
-					// Points of the ships sides.
-					currentVertices[j].x,
-					currentVertices[j].y,
-					currentVertices[next].x,
-					currentVertices[next].y,
-					// Asteroid position and size*2(radius).
-					this.asteroidsManager.asteroids[i].position.x,
-					this.asteroidsManager.asteroids[i].position.y,
-					this.asteroidsManager.asteroids[i].size/2// * 2
-				)
-				if (hit){
-					console.log("Spaceship hit!");
-				}
-			}
-		}
+
+
+
+
+	/** Pre-main loop.
+	 *
+	 * This loop shows something like "Press 'i' to spawn".
+	 */
+	this.preMainLoop = function(){
+		// tickTime de-couples the framerate from the gamespeed.
+		var tickTime = this.timer.getTickTime();
+
+		this.processing.fill(0,0,0);
+		this.processing.background(0,0,0);
+
+		// Move than display all asteroids
+		this.asteroidsManager.moveAsteroids(tickTime, this.gameSpeed);
+		this.asteroidsManager.displayAsteroids();
+
+		this.processing.fill(200, 0, 0, 200);
+		this.processing.textSize(40);
+		processing.text("Press 'i' to spawn.", 19, 250);
+
+		this.timer.tick();
 	};
+
+	this.preMainKeyPresses = function(){
+		// 'i' key pressed.
+		if(this.processing.keyCode === 73){
+			this.contextManager.setContext(
+				this.mainLoop,
+				this.mainKeyPresses,
+				this.mainKeyReleases
+			);
+		}
+	}
 }

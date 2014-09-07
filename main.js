@@ -5,13 +5,10 @@ function sketchProc(processing) {
 	view = new View(processing);
 	view.setterupper();
 
-	processing.draw = function(tickTime) {
-		view.mainLoop();
+	processing.draw = function(){
+		view.preMainLoop();
 	};
 	processing.keyPressed = function() {
-		view.keyPressed();
-	};
-	processing.keyReleased = function() {
-		view.keyReleased();
+		view.preMainKeyPresses();
 	};
 }

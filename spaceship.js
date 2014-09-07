@@ -122,6 +122,26 @@ function Spaceship(processing){
 		this.applyForce(force);
 		this.backwards = true;
 	};
+
+	/** Resets the ship back original position.
+	 *
+	 * Resets all of the ship's attributes so that it spawns
+	 * back into the middle of the screen. Also resets the ship's
+	 * shots.
+	 */
+	this.resetShip = function(){
+		this.heading = 0;
+		this.thrusting = false;
+		this.backwards = false;
+		
+		this.turningRight = false;
+		this.turningLeft = false;
+		this.position = new processing.PVector(250, 250);
+		this.velocity = new processing.PVector();
+		this.acceleration = new processing.PVector();
+		
+		this.shots = [];
+	};
 		
 	/** Returns array of the current absolute postion of ship vertices.
 	 *
