@@ -23,6 +23,7 @@ function Spaceship(processing){
 	this.acceleration = new processing.PVector();
 	
 	this.shots = [];
+	this.lives = 3;
 
 	// List of vertices to draw the spaceship with.
 	// This means that the spaceship can now have a dynamic shape.

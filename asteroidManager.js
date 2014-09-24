@@ -38,7 +38,6 @@
 		}
 		else{
 			for(var i=0; i<pieces; i+=1){
-				// Random heading of new asteroid.
 				heading = Math.random()*360;
 				angle = heading - processing.PI/2;
 				force = new processing.PVector(Math.cos(angle), Math.sin(angle));
@@ -52,8 +51,6 @@
 					this.asteroids[index].level-1
 				);
 			}
-			// Remove the initial asteroid.
-			this.removeAsteroid(index);
 		}
 	};
 	
@@ -62,7 +59,7 @@
 	this.detectCircularCollision = function(pos, size){
 		for(var i=0; i<this.asteroids.length; i+=1){
 			distance = this.asteroids[i].position.dist(pos);
-			if(distance<=this.asteroids[i].size/2+size/2){
+			if(distance<this.asteroids[i].size/2+size/2){
 				// only return one asteroid.
 				return i;
 			}

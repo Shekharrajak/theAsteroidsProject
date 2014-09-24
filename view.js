@@ -13,9 +13,10 @@ function View(processing){
 		this.timer = new FrameTimer();
 		this.ship = new Spaceship();
 		this.shots = [];
+		this.gameLevel = 1; // Shows what level the game is on.
 		this.asteroidsManager = new AsteroidsManager();
 		// Add a new testing asteroid.
-		this.asteroidsManager.addAsteroid([100,100], [1,2], 3);
+		this.asteroidsManager.addAsteroid([100,100], [1,2], 1);
 		this.contextManager = new contextManager(this);
 		
 		this.gameSpeed = 15;
@@ -37,6 +38,7 @@ function View(processing){
 
 		// Reset the ship.
 		this.ship.resetShip();
+		this.ship.lives -= 1;
 	};
 
 	//Manage collision between ship and asteroids.
@@ -62,8 +64,12 @@ function View(processing){
 					this.asteroidsManager.asteroids[i].position.y,
 					this.asteroidsManager.asteroids[i].size/2// * 2
 				)
-				if (hit){
+				if(hit){
 					this.shipDeath();
+					if(this.ship.lives <= 0){
+						this.ship.lives = 3;
+						this.level = 1;
+					}
 					this.contextManager.setContext(
 						this.preMainLoop,
 						this.preMainKeyPresses,
@@ -89,6 +95,12 @@ function View(processing){
 		// Display background to clear everything.
 		this.processing.fill(0,0,0);
 		this.processing.background(0,0,0);
+
+		// Display this text first
+		processing.fill(200, 0, 0);
+		processing.textSize(20);
+		processing.text("Level " + this.gameLevel, 10, 20);
+		processing.text("Lives " + this.ship.lives, 80, 20);
 
 		// Move than display all asteroids
 		this.asteroidsManager.moveAsteroids(tickTime, this.gameSpeed);
@@ -120,7 +132,21 @@ function View(processing){
 
 		// Check asteroid to spaceship collisions.
 		this.asteroidsShipCollision();
-		
+
+		// If we destroy all asteroids.
+		if(this.asteroidsManager.asteroids.length <= 0){
+			var angle = Math.random(processing.TWO_PI);
+			vel = new processing.PVector(
+				Math.cos(angle),
+				Math.sin(angle)
+			);
+			this.asteroidsManager.addAsteroid(
+				[100, 100],
+				[1,2],
+				this.gameLevel + 1
+			);
+			this.gameLevel += 1;
+		}
 		// Update time since last frame.
 		// TODO: Try to remember/figure out why this is done last.
 		// Or does is even matter when is runs as long it's consistent?
@@ -182,6 +208,11 @@ function View(processing){
 		this.processing.fill(0,0,0);
 		this.processing.background(0,0,0);
 
+		// Display this text first
+		processing.fill(200, 0, 0);
+		processing.textSize(20);
+		processing.text("Level " + this.gameLevel, 10, 20);
+		processing.text("Lives " + this.ship.lives, 80, 20);
 		// Move than display all asteroids
 		this.asteroidsManager.moveAsteroids(tickTime, this.gameSpeed);
 		this.asteroidsManager.displayAsteroids();
