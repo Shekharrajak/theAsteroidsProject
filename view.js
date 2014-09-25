@@ -16,7 +16,8 @@ function View(processing){
 		this.gameLevel = 1; // Shows what level the game is on.
 		this.asteroidsManager = new AsteroidsManager();
 		// Add a new testing asteroid.
-		this.asteroidsManager.addAsteroid([100,100], [1,2], 1);
+		//this.asteroidsManager.addAsteroid([100,100], [1,2], 1);
+		this.asteroidsManager.addRandomAsteroid({'level' : 1});
 		this.contextManager = new contextManager(this);
 		
 		this.gameSpeed = 15;
@@ -140,11 +141,8 @@ function View(processing){
 				Math.cos(angle),
 				Math.sin(angle)
 			);
-			this.asteroidsManager.addAsteroid(
-				[100, 100],
-				[1,2],
-				this.gameLevel + 1
-			);
+			params = {'level' : this.gameLevel+1};
+			this.asteroidsManager.addRandomAsteroid(params);
 			this.gameLevel += 1;
 		}
 		// Update time since last frame.

@@ -11,6 +11,39 @@
 		this.asteroids.push((new Asteroid(pos, vel, level)));
 	};
 
+	this.addRandomAsteroid = function(params){
+		// If param is undefined. Set to dictionary.
+		params = params === undefined ? {} : params;
+		
+		pos = params['pos'];
+		vel = params['vel'];
+		level = params['level'];
+		
+		if(pos === undefined){
+			x = Math.random()*Processing.width;
+			y = Math.random()*Processing.height;
+			pos = [x, y];
+		}
+		
+		if(level === undefined){
+			level = Math.random()*5;
+		}
+		
+		if(vel === undefined){
+			// Generate a random heading.
+			heading = Math.random()*360;
+			angle = heading - processing.PI/2;
+			vel = new processing.PVector(Math.cos(angle), Math.sin(angle));
+		}
+		
+		// Add the new asteroid.
+		this.addAsteroid(
+			[pos[0], pos[1]],
+			[vel.x, vel.y],
+			level
+		);
+	}
+
 	this.removeAsteroid = function(index){
 		this.asteroids.splice(index, 1);
 	};
@@ -38,19 +71,18 @@
 		}
 		else{
 			for(var i=0; i<pieces; i+=1){
-				heading = Math.random()*360;
-				angle = heading - processing.PI/2;
-				force = new processing.PVector(Math.cos(angle), Math.sin(angle));
-				// Add the new asteroid.
-				this.addAsteroid(
-					[
-						this.asteroids[index].position.x,
-						this.asteroids[index].position.y
-					],
-					[force.x, force.y],
-					this.asteroids[index].level-1
-				);
+				// Add the new asteroid. with random heading.
+				params = {
+					'pos' :
+						[
+							this.asteroids[index].position.x,
+							this.asteroids[index].position.y
+						],
+					'level' : this.asteroids[index].level-1
+				};
+				this.addRandomAsteroid(params);
 			}
+			this.removeAsteroid(index);
 		}
 	};
 	
